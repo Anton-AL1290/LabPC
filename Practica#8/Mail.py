@@ -1,7 +1,7 @@
 import argparse
 import re
 import sys
-import imaplib
+import smtplib
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -23,8 +23,8 @@ def main():
     sys.stdout.write(str(send_mail(args)))
 
 def send_mail(args):
-    imap = imaplib.IMAP4_SSL('imap.gmail.com')
-    imap.login(args.user, args.password)
+    smtp = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+    smtp.login(args.user, args.password)
     message = MIMEMultipart('Alternative')
     message['Subject'] = args.subject
     message['from'] = args.user
@@ -52,6 +52,9 @@ def send_mail(args):
     )
     message.attach(content_att)
     text = message.as_string
+    smtp.send_message(message)
+    smtp.quit
+    return('Mensaje enviado de manera exitosa')
 
 if __name__ == '__main__':
     main()
